@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	yaml "gopkg.in/yaml.v2"
@@ -23,6 +25,17 @@ type Settings struct {
 	DB       string `yaml:"db"`
 }
 
+type sensorData struct {
+	Date       time.Time `json:"date"`
+	SensorList []sensor  `json:"sensor-list"`
+}
+
+type sensor struct {
+	Number       int     `json:"number"`
+	Name         string  `json:"name"`
+	TemperatureC float64 `json:"temp_c"`
+}
+
 func main() {
 	os.Exit(run(os.Args))
 }
@@ -30,14 +43,15 @@ func main() {
 func run(args []string) int {
 	s, err := getSettings("collector.yml")
 	if err != nil {
-		log.Printf("error: %v", err)
+		log.Printf("Failed to get settings: %v", err)
 		return exitCodeFailed
 	}
+	log.Printf("Sensor's URI:%s, DB's URI:%s", s.Sensor, s.DB)
 
 	for {
 		err = getSensorAndPostToDB(s.Sensor, s.DB)
 		if err != nil {
-			log.Printf("error: %v", err)
+			log.Printf("Faild to get and post: %v", err)
 			break
 		}
 		time.Sleep(time.Duration(s.Duration) * time.Minute)
@@ -66,14 +80,30 @@ func getSettings(path string) (*Settings, error) {
 	return s, nil
 }
 
-func getSensorAndPostToDB(sensor, db string) error {
-	resp, err := http.Get(sensor)
+func getSensorAndPostToDB(sensorURI, dbURI string) error {
+	resp, err := http.Get(sensorURI)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	respDB, err := http.Post(db, "application/json", resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	var data sensorData
+	err = json.Unmarshal(b, &data)
+	if err != nil {
+		return err
+	}
+	data.Date = time.Now()
+
+	bj, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	reader := strings.NewReader(string(bj))
+	respDB, err := http.Post(dbURI, "application/json", reader)
 	if err != nil {
 		return err
 	}

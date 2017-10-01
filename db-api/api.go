@@ -15,7 +15,7 @@ func epGetSensors(c *gin.Context) {
 	var result []*sensorData
 	err := q.All(&result)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"messge": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	}
 	c.JSON(http.StatusOK, &result)
 }
@@ -26,12 +26,14 @@ func epPostSensors(c *gin.Context) {
 	var data sensorData
 	err := c.BindJSON(&data)
 	if err != nil {
+		log.Println("Failed to bind", err)
 		c.JSON(http.StatusUnsupportedMediaType, gin.H{"message": err.Error()})
 		return
 	}
-	log.Printf("%v", data)
+
 	err = column.Insert(data)
 	if err != nil {
+		log.Println("Failed to insert data", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}

@@ -1,6 +1,8 @@
-duration: # The unit of this parameter is minute
-  1
-sensor: # The address of the sensor API
-  localhost:5000
-db: # The address of the DB API
-  localhost:9000
+# The unit of this parameter is minute
+duration: 1
+
+# The address of the sensor API
+sensor: http://localhost:5000/api/v1/sensors
+
+# The address of the DB API
+db: http://localhost:9000/sensors
