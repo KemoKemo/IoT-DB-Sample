@@ -90,7 +90,7 @@ func getChartData(q DateQueryParam, db *mgo.Database) (*ChartData, error) {
 				"$and": []bson.M{
 					bson.M{"date": bson.M{"$gte": q.Start}},
 					bson.M{"date": bson.M{"$lte": q.End}},
-				}}).Sort("-$natural").All(&data.DataSetList)
+				}}).Sort("$natural").All(&data.DataSetList)
 	if err != nil {
 		return &data, err
 	}
