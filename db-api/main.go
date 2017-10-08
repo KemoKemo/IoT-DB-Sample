@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"gopkg.in/mgo.v2"
@@ -47,11 +48,12 @@ func run(args []string) int {
 	defer s.Close()
 
 	r := gin.Default()
+	r.Use(cors.Default())
 	r.GET("/sensors", withVars(withData(s, epGetSensors)))
 	r.POST("/sensors", withVars(withData(s, epPostSensors)))
 	err = r.Run(*addr)
 	if err != nil {
-		log.Println("Failed to run a web service", err)
+		log.Println("Failed to run a DB API service", err)
 		return exitCodeFailed
 	}
 
