@@ -24,12 +24,14 @@ var (
 	dbURI      string
 )
 
-type sensorData struct {
+// DataSet is the data set of the sensors.
+type DataSet struct {
 	Date       time.Time `json:"date"`
-	SensorList []sensor  `json:"sensor-list"`
+	SensorList []Sensor  `json:"sensor_list"`
 }
 
-type sensor struct {
+// Sensor is the data of a sensor.
+type Sensor struct {
 	Number       int     `json:"number"`
 	Name         string  `json:"name"`
 	TemperatureC float64 `json:"temp_c"`
@@ -60,7 +62,7 @@ func run(args []string) int {
 	}
 	fmt.Printf("Status: %v, Body: %v\n", resp.Status, string(b))
 
-	var data sensorData
+	var data DataSet
 	err = json.Unmarshal(b, &data)
 	if err != nil {
 		log.Println("Failed to unmarshal", err)

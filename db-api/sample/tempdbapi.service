@@ -1,0 +1,10 @@
+[Unit]
+Description=a DB service for temperature using mongodb
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tempdb
+ExecStop=/bin/kill -SIGTERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

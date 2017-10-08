@@ -1,8 +1,8 @@
 # The unit of this parameter is minute
-duration: 1
+duration: 5
 
 # The address of the sensor API
-sensor: http://localhost:5000/api/v1/sensors
+sensor: http://192.168.111.135:5000/api/v1/sensors
 
 # The address of the DB API
 db: http://localhost:9000/sensors

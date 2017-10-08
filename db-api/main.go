@@ -5,23 +5,11 @@ import (
 	"log"
 	"os"
 	"sync"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
 	"gopkg.in/mgo.v2"
 )
-
-type sensorData struct {
-	Date       time.Time `json:"date" binding:"required"`
-	SensorList []sensor  `json:"sensor-list" binding:"required"`
-}
-
-type sensor struct {
-	Number       int     `json:"number" binding:"required"`
-	Name         string  `json:"name" binding:"required"`
-	TemperatureC float64 `json:"temp_c" binding:"required"`
-}
 
 // Exit code
 const (
@@ -30,7 +18,8 @@ const (
 )
 
 const (
-	dbname = "tempdata"
+	dbName     = "tempdata"
+	columnName = "sensors"
 )
 
 var (

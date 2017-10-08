@@ -27,7 +27,7 @@ type Settings struct {
 
 type sensorData struct {
 	Date       time.Time `json:"date"`
-	SensorList []sensor  `json:"sensor-list"`
+	SensorList []sensor  `json:"sensor_list"`
 }
 
 type sensor struct {

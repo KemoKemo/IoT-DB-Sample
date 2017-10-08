@@ -9,21 +9,23 @@ import (
 )
 
 func epGetSensors(c *gin.Context) {
+	q, err := rParseQuery(c.Request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
 	db := getVars(c, "db").(*mgo.Database)
-	column := db.C("sensors")
-	q := column.Find(nil)
-	var result []*sensorData
-	err := q.All(&result)
+	result, err := getChartData(q, db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, &result)
+	c.JSON(http.StatusOK, result)
 }
 
 func epPostSensors(c *gin.Context) {
-	db := getVars(c, "db").(*mgo.Database)
-	column := db.C("sensors")
-	var data sensorData
+	var data DataSet
 	err := c.BindJSON(&data)
 	if err != nil {
 		log.Println("Failed to bind", err)
@@ -31,7 +33,8 @@ func epPostSensors(c *gin.Context) {
 		return
 	}
 
-	err = column.Insert(data)
+	db := getVars(c, "db").(*mgo.Database)
+	err = db.C(columnName).Insert(data)
 	if err != nil {
 		log.Println("Failed to insert data", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

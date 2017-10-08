@@ -1,0 +1,11 @@
+[Unit]
+Description=a collector service for the temperature
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/bin/tempcol
+ExecStart=/usr/local/bin/tempcol/collector
+ExecStop=/bin/kill -SIGTERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target

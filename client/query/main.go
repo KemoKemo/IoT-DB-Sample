@@ -16,12 +16,19 @@ const (
 	exitCodeFailed
 )
 
-type sensorData struct {
-	Date       time.Time `json:"date"`
-	SensorList []sensor  `json:"sensor-list"`
+// ChartData describes the data of the chart.
+type ChartData struct {
+	DataSetList []DataSet `json:"data_set_list"`
 }
 
-type sensor struct {
+// DataSet is the data set of the sensors.
+type DataSet struct {
+	Date       time.Time `json:"date"`
+	SensorList []Sensor  `json:"sensor_list"`
+}
+
+// Sensor is the data of a sensor.
+type Sensor struct {
 	Number       int     `json:"number"`
 	Name         string  `json:"name"`
 	TemperatureC float64 `json:"temp_c"`
@@ -51,17 +58,17 @@ func run(args []string) int {
 	}
 	defer s.Close()
 
-	list := []sensorData{}
+	var data ChartData
 	err = s.DB(dbname).C("sensors").Find(
 		bson.M{"date": bson.M{"$lte": time.Now()}},
-	).Sort("-$natural").Limit(10).All(&list)
+	).Sort("-$natural").Limit(50).All(&data.DataSetList)
 	if err != nil {
 		log.Println("Failed to find", err)
 		return exitCodeFailed
 	}
 
 	fmt.Println("sensors:")
-	for _, item := range list {
+	for _, item := range data.DataSetList {
 		fmt.Printf(" %v\n", item)
 	}
 
