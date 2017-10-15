@@ -25,12 +25,14 @@ type Settings struct {
 	DB       string `yaml:"db"`
 }
 
-type sensorData struct {
+// DataSet is the data set of the sensors.
+type DataSet struct {
 	Date       time.Time `json:"date"`
-	SensorList []sensor  `json:"sensor_list"`
+	SensorList []Sensor  `json:"sensor_list"`
 }
 
-type sensor struct {
+// Sensor is the data of a sensor.
+type Sensor struct {
 	Number       int     `json:"number"`
 	Name         string  `json:"name"`
 	TemperatureC float64 `json:"temp_c"`
@@ -91,7 +93,7 @@ func getSensorAndPostToDB(sensorURI, dbURI string) error {
 	if err != nil {
 		return err
 	}
-	var data sensorData
+	var data DataSet
 	err = json.Unmarshal(b, &data)
 	if err != nil {
 		return err
