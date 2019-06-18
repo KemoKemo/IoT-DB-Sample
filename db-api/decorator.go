@@ -8,7 +8,7 @@ import (
 func withData(s *mgo.Session, f func(c *gin.Context)) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		session := s.Copy()
-		defer session.Clone()
+		defer session.Close()
 		setVars(c, "db", session.DB(dbName))
 		f(c)
 	}
